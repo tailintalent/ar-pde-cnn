@@ -3,8 +3,11 @@ import torch
 import json
 import random
 from pprint import pprint
-from utils.utils import mkdirs
 import time
+import os, sys
+sys.path.append(os.path.join(os.path.dirname("__file__"), '..', '..'))
+from plasma.ar_pde_cnn.ONED_KS_SWAG.utils.utils import mkdirs
+
 
 # always uses cuda if avaliable
 

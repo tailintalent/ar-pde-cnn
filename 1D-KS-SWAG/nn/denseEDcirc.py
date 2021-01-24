@@ -50,13 +50,13 @@ class _DenseLayer(nn.Sequential):
             self.add_module('norm2', nn.BatchNorm1d(bn_size * growth_rate))
             self.add_module('relu2', nn.ReLU(inplace=True))
             self.add_module('conv1', nn.Conv1d(in_features, growth_rate,
-                            kernel_size=2*padding+1, stride=1, padding=padding*2, 
+                            kernel_size=2*padding+1, stride=1, padding=padding, 
                             bias=False, padding_mode='circular'))
         else:
             self.add_module('norm1', nn.BatchNorm1d(in_features))
             self.add_module('relu1', nn.ReLU(inplace=True))
             self.add_module('conv1', nn.Conv1d(in_features, growth_rate,
-                            kernel_size=2*padding+1, stride=1, padding=padding*2, 
+                            kernel_size=2*padding+1, stride=1, padding=padding, 
                             bias=False, padding_mode='circular'))
         if drop_rate > 0:
             self.add_module('dropout', nn.Dropout1d(p=drop_rate))
@@ -107,13 +107,13 @@ class _Transition(nn.Sequential):
                 # not using pooling, fully convolutional...
                 self.add_module('conv2', nn.Conv1d(out_features, out_features,
                     kernel_size=padding*2+2, stride=2, 
-                    padding=padding*2, bias=False, padding_mode='circular'))
+                    padding=padding, bias=False, padding_mode='circular'))
                 if drop_rate > 0:
                     self.add_module('dropout2', nn.Dropout1d(p=drop_rate))
             else:
                 self.add_module('conv1', nn.Conv1d(in_features, out_features,
                     kernel_size=padding*2+2, stride=2, 
-                    padding=padding*2, bias=False, padding_mode='circular'))
+                    padding=padding, bias=False, padding_mode='circular'))
                 if drop_rate > 0:
                     self.add_module('dropout1', nn.Dropout1d(p=drop_rate))
         else:
@@ -136,11 +136,11 @@ class _Transition(nn.Sequential):
                 elif upsample == 'linear':
                     self.add_module('upsample', UpsamplingLinear1d(scale_factor=2))
                     self.add_module('conv2', nn.Conv1d(out_features, out_features,
-                        3, 1, 1*2, bias=False, padding_mode='circular'))
+                        3, 1, 1, bias=False, padding_mode='circular'))
                 elif upsample == 'nearest':
                     self.add_module('upsample', UpsamplingNearest1d(scale_factor=2))
                     self.add_module('conv2', nn.Conv1d(out_features, out_features,
-                        3, 1, 1*2, bias=False, padding_mode='circular'))
+                        3, 1, 1, bias=False, padding_mode='circular'))
 
             else:
                 if upsample is None:
@@ -150,11 +150,11 @@ class _Transition(nn.Sequential):
                 elif upsample == 'linear':
                     self.add_module('upsample', UpsamplingLinear1d(scale_factor=2))
                     self.add_module('conv2', nn.Conv1d(in_features, out_features,
-                        3, 1, 1*2, bias=False, padding_mode='circular'))
+                        3, 1, 1, bias=False, padding_mode='circular'))
                 elif upsample == 'nearest':
                     self.add_module('upsample', UpsamplingNearest1d(scale_factor=2))
                     self.add_module('conv2', nn.Conv1d(in_features, out_features,
-                        3, 1, 1*2, bias=False, padding_mode='circular'))
+                        3, 1, 1, bias=False, padding_mode='circular'))
 
             if drop_rate > 0:
                 self.add_module('dropout1', nn.Dropout1d(p=drop_rate))
@@ -180,11 +180,11 @@ def last_decoding(in_features, out_channels, drop_rate=0., upsample='nearest'):
     elif upsample == 'linear':
         last_up.add_module('upsample', UpsamplingLinear1d(scale_factor=2))
     last_up.add_module('conv2', nn.Conv1d(in_features // 2, in_features // 4,
-        kernel_size=3, stride=1, padding=1*2, bias=False, padding_mode='circular'))
+        kernel_size=3, stride=1, padding=1, bias=False, padding_mode='circular'))
     last_up.add_module('norm3', nn.BatchNorm1d(in_features // 4))
     last_up.add_module('relu3', nn.ReLU(True))
     last_up.add_module('conv3', nn.Conv1d(in_features // 4, out_channels,
-        kernel_size=5, stride=1, padding=2*2, bias=False, padding_mode='circular'))
+        kernel_size=5, stride=1, padding=2, bias=False, padding_mode='circular'))
     return last_up
 
 
@@ -241,7 +241,7 @@ class DenseED(nn.Module):
         # For even image size: k7s2p3, k5s2p2
         # For odd image size (e.g. 65): k7s2p2, k5s2p1, k13s2p5, k11s2p4, k9s2p3
         self.features.add_module('In_conv', nn.Conv1d(in_channels, init_features, 
-                              kernel_size=7, stride=2, padding=3*2, 
+                              kernel_size=7, stride=2, padding=3, 
                               bias=False, padding_mode='circular'))
         # Encoding / transition down ================
         # dense block --> encoding --> dense block --> encoding
